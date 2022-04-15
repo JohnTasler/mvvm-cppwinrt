@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{119310b5-558d-494e-807f-8a6c520b03a3}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)delegate_command.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)name_of.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)notify_property_changed.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)opensource\mvvm\delegate_command.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)opensource\mvvm\name_of.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)opensource\mvvm\notify_property_changed.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)opensource\mvvm\property_macros.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)opensource\mvvm\view.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)opensource\mvvm\view_model.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)opensource\mvvm\view_model_base.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)opensource\mvvm\view_sync_data_context.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)property_macros.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)view.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)view_model.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)view_model_base.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)view_sync_data_context.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)opensource\mvvm\README.md" />
+  </ItemGroup>
+</Project>

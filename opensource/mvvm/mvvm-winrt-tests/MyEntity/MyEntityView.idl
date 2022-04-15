@@ -1,0 +1,15 @@
+import "MyEntityViewModel.idl";
+
+namespace mvvm.tests
+{
+    [default_interface]
+    runtimeclass MyEntityView
+        : Windows.UI.Xaml.Controls.UserControl
+        , Windows.UI.Xaml.Data.INotifyPropertyChanged
+    {
+        MyEntityView();
+        MyEntityView(MyEntityViewModel viewModel);
+
+        Windows.UI.Xaml.Controls.Button ClickMeButton;
+    }
+}

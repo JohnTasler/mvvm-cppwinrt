@@ -1,0 +1,9 @@
+namespace mvvm.tests
+{
+    [default_interface]
+    runtimeclass MyEntityViewModel
+    {
+        MyEntityViewModel();
+        Int32 MyProperty;
+    }
+}
