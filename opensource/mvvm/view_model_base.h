@@ -29,7 +29,6 @@ namespace mvvm
                 return base::notify_property_changed::get_property_core(valueField);
             }
 
-            if (winrt::box<bool>(true))
             return [this, &valueField]() -> winrt::Windows::Foundation::IAsyncOperation<TValue>
             {
                 co_await derived_this().Dispatcher();
