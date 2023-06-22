@@ -108,7 +108,7 @@ namespace mvvm
         template <typename Value>
         bool set_property(Value& valueField, Value const& newValue, Value& oldValue)
         {
-            return derived_this().set_property_override<Value, Value, true, const std::nullptr_t>(valueField, newValue, Value, nullptr_ref);
+            return derived_this().set_property_override<Value, Value, true, const std::nullptr_t>(valueField, newValue, oldValue, nullptr_ref);
         }
 
     #pragma endregion

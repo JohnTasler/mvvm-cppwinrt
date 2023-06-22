@@ -33,17 +33,17 @@ using namespace std::literals;
 
 
 #ifndef DEFINE_PROPERTY_READONLY
-#define DEFINE_PROPERTY_READONLY(type, name, defaultvalue) \
+#define DEFINE_PROPERTY_READONLY(type, name, defaultValue) \
     public: \
         type name##() { return m_property##name; } \
     private: \
-        type m_property##name = defaultvalue; \
+        type m_property##name = defaultValue; \
     public:
 #endif
 
 
 #ifndef _DEFINE_PROPERTY_SCOPED_ACCESS_SET
-#define _DEFINE_PROPERTY_SCOPED_ACCESS_SET(type, name, access, defaultvalue) \
+#define _DEFINE_PROPERTY_SCOPED_ACCESS_SET(type, name, access, defaultValue) \
     public: \
         type name##() { return this->get_property(m_property##name); } \
     access##: \
@@ -53,25 +53,25 @@ using namespace std::literals;
             this->set_property(m_property##name, newValue, propertyName); \
         } \
     private: \
-        type m_property##name = defaultvalue; \
+        type m_property##name = defaultValue; \
     public:
 #endif
 
 #ifndef DEFINE_PROPERTY
-#define DEFINE_PROPERTY(type, name, defaultvalue) _DEFINE_PROPERTY_SCOPED_ACCESS_SET(type, name, public, defaultvalue)
+#define DEFINE_PROPERTY(type, name, defaultValue) _DEFINE_PROPERTY_SCOPED_ACCESS_SET(type, name, public, defaultValue)
 #endif
 
 #ifndef DEFINE_PROPERTY_PRIVATE_SET
-#define DEFINE_PROPERTY_PRIVATE_SET(type, name, defaultvalue) _DEFINE_PROPERTY_SCOPED_ACCESS_SET(type, name, private, defaultvalue)
+#define DEFINE_PROPERTY_PRIVATE_SET(type, name, defaultValue) _DEFINE_PROPERTY_SCOPED_ACCESS_SET(type, name, private, defaultValue)
 #endif
 
 #ifndef DEFINE_PROPERTY_PROTECTED_SET
-#define DEFINE_PROPERTY_PROTECTED_SET(type, name, defaultvalue) _DEFINE_PROPERTY_SCOPED_ACCESS_SET(type, name, private, defaultvalue)
+#define DEFINE_PROPERTY_PROTECTED_SET(type, name, defaultValue) _DEFINE_PROPERTY_SCOPED_ACCESS_SET(type, name, private, defaultValue)
 #endif
 
 
-#ifndef _DEFINE_PROPERTY_CALLBACK_SCOPED_ACCESS_SET
-#define _DEFINE_PROPERTY_CALLBACK_SCOPED_ACCESS_SET(type, name, access, defaultvalue) \
+#ifndef _DEFINE_PROPERTY_CALLBACK_NO_NOTIFY_SCOPED_ACCESS_SET
+#define _DEFINE_PROPERTY_CALLBACK_NO_NOTIFY_SCOPED_ACCESS_SET(type, name, access, defaultValue) \
     public: \
         type name##() { return this->get_property(m_property##name); } \
     access##: \
@@ -79,7 +79,7 @@ using namespace std::literals;
         { \
             constexpr auto propertyName = L""#name##sv; \
             type oldValue; \
-            if (this->set_property(m_property##name, newValue, oldValue, propertyName)) \
+            if (this->set_property(m_property##name, newValue, oldValue)) \
             { \
                 this->On##name##Changed(oldValue, newValue); \
             } \
@@ -87,20 +87,54 @@ using namespace std::literals;
     protected: \
         void On##name##Changed(type const& oldValue, type const& newValue); \
     private: \
-        type m_property##name = defaultvalue; \
+        type m_property##name = defaultValue; \
+    public:
+#endif
+
+#ifndef DEFINE_PROPERTY_CALLBACK_NO_NOTIFY
+#define DEFINE_PROPERTY_CALLBACK_NO_NOTIFY(type, name, defaultValue) _DEFINE_PROPERTY_CALLBACK_NO_NOTIFY_SCOPED_ACCESS_SET(type, name, public, defaultValue)
+#endif
+
+#ifndef DEFINE_PROPERTY_CALLBACK_NO_NOTIFY_PRIVATE_SET
+#define DEFINE_PROPERTY_CALLBACK_NO_NOTIFY_PRIVATE_SET(type, name, defaultValue) _DEFINE_PROPERTY_CALLBACK_NO_NOTIFY_SCOPED_ACCESS_SET(type, name, private, defaultValue)
+#endif
+
+#ifndef DEFINE_PROPERTY_CALLBACK_NO_NOTIFY_PROTECTED_SET
+#define DEFINE_PROPERTY_CALLBACK_NO_NOTIFY_PROTECTED_SET(type, name, defaultValue) _DEFINE_PROPERTY_CALLBACK_NO_NOTIFY_SCOPED_ACCESS_SET(type, name, protected, defaultValue)
+#endif
+
+
+#ifndef _DEFINE_PROPERTY_CALLBACK_SCOPED_ACCESS_SET
+#define _DEFINE_PROPERTY_CALLBACK_SCOPED_ACCESS_SET(type, name, access, defaultValue) \
+    public: \
+        type name##() { return this->get_property(m_property##name); } \
+    access##: \
+        void name##(type newValue) \
+        { \
+            constexpr auto propertyName = L""#name##sv; \
+            type oldValue; \
+            if (this->set_property(m_property##name, newValue, oldValue)) \
+            { \
+                this->On##name##Changed(oldValue, newValue); \
+            } \
+        } \
+    protected: \
+        void On##name##Changed(type const& oldValue, type const& newValue); \
+    private: \
+        type m_property##name = defaultValue; \
     public:
 #endif
 
 #ifndef DEFINE_PROPERTY_CALLBACK
-#define DEFINE_PROPERTY_CALLBACK(type, name, defaultvalue) _DEFINE_PROPERTY_CALLBACK_SCOPED_ACCESS_SET(type, name, public, defaultValue)
+#define DEFINE_PROPERTY_CALLBACK(type, name, defaultValue) _DEFINE_PROPERTY_CALLBACK_SCOPED_ACCESS_SET(type, name, public, defaultValue)
 #endif
 
 #ifndef DEFINE_PROPERTY_CALLBACK_PRIVATE_SET
-#define DEFINE_PROPERTY_CALLBACK_PRIVATE_SET(type, name, defaultvalue) _DEFINE_PROPERTY_CALLBACK_SCOPED_ACCESS_SET(type, name, private, defaultValue)
+#define DEFINE_PROPERTY_CALLBACK_PRIVATE_SET(type, name, defaultValue) _DEFINE_PROPERTY_CALLBACK_SCOPED_ACCESS_SET(type, name, private, defaultValue)
 #endif
 
 #ifndef DEFINE_PROPERTY_CALLBACK_PROTECTED_SET
-#define DEFINE_PROPERTY_CALLBACK_PROTECTED_SET(type, name, defaultvalue) _DEFINE_PROPERTY_CALLBACK_SCOPED_ACCESS_SET(type, name, protected, defaultValue)
+#define DEFINE_PROPERTY_CALLBACK_PROTECTED_SET(type, name, defaultValue) _DEFINE_PROPERTY_CALLBACK_SCOPED_ACCESS_SET(type, name, protected, defaultValue)
 #endif
 
 
