@@ -77,9 +77,8 @@ using namespace std::literals;
     access##: \
         void name##(type value) \
         { \
-            constexpr auto propertyName = L""#name##sv; \
             type oldValue; \
-            if (this->set_property(m_property##name, newValue, oldValue)) \
+            if (this->set_property(newValue, oldValue)) \
             { \
                 this->On##name##Changed(oldValue, newValue); \
             } \
