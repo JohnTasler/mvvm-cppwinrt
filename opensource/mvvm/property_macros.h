@@ -78,7 +78,7 @@ using namespace std::literals;
         void name##(type value) \
         { \
             type oldValue; \
-            if (this->set_property(newValue, oldValue)) \
+            if (this->set_property(m_property##name, newValue, oldValue)) \
             { \
                 this->On##name##Changed(oldValue, newValue); \
             } \
@@ -112,7 +112,7 @@ using namespace std::literals;
         { \
             constexpr auto propertyName = L""#name##sv; \
             type oldValue; \
-            if (this->set_property(m_property##name, newValue, oldValue)) \
+            if (this->set_property(m_property##name, newValue, oldValue, propertyName)) \
             { \
                 this->On##name##Changed(oldValue, newValue); \
             } \
