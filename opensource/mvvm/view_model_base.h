@@ -46,7 +46,7 @@ namespace mvvm
 
             auto lambda = [this, &valueField, &newValue, &oldValue, &propertyNameOrNames]() -> winrt::Windows::Foundation::IAsyncOperation<bool>
             {
-                co_await derived_this().get_dispatcher_override();
+                co_await winrt::resume_foreground(derived_this().get_dispatcher_override());
                 co_return base::notify_property_changed::set_property_core<TValue, TOldValue, compare, propertyNameType>(std::forward<TValue&>(valueField), newValue, oldValue, propertyNameOrNames);
             };
 
