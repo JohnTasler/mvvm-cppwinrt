@@ -26,10 +26,12 @@ namespace mvvm
     {
         using view_model_type = typename ViewModel;
 
+        friend typename Derived;
+
         view_sync_data_context()
         {
             // Setup the ViewModel property to shadow (synchronize with) the DataContext property
-            derived_this().DataContextChanged([this, weakThis = derived_this().get_weak()](auto&&, auto&& args)
+            this->derived().DataContextChanged([this, weakThis = this->derived().get_weak()](auto&&, auto&& args)
             {
                 if (auto thisRef = weakThis.get())
                 {
@@ -41,22 +43,22 @@ namespace mvvm
 
                     if (!m_isViewModelUpdating)
                     {
-                        derived_this().ViewModel(args.NewValue().as<view_model_type>());
+                        this->derived().ViewModel(args.NewValue().as<view_model_type>());
                     }
 
-                    derived_this().Bindings->Update();
+                    this->derived().Bindings->Update();
                 }
             });
         }
 
         view_sync_data_context(view_model_base const& viewModel)
         {
-            derived_this().DataContext(viewModel);
+            this->derived().DataContext(viewModel);
         }
 
         view_model_type ViewModel()
         {
-            auto dataContext = derived_this().DataContext();
+            auto dataContext = this->derived().DataContext();
             return dataContext.try_as<view_model_type>();
         }
         void ViewModel(view_model_type const& value)
@@ -69,7 +71,7 @@ namespace mvvm
 
             if (!m_isDataContextUpdating)
             {
-                derived_this().DataContext(value);
+                this->derived().DataContext(value);
             }
         };
 

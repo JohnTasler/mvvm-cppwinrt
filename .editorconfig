@@ -1,0 +1,20 @@
+# Remove the line below if you want to inherit .editorconfig settings from higher directories
+root = true
+
+# All files
+[*]
+
+#### Core EditorConfig Options ####
+
+# Indentation and spacing
+charset = utf-8
+indent_size = 4
+indent_style = space
+tab_width = 4
+
+# New line preferences
+end_of_line = crlf
+insert_final_newline = true
+
+# guidelines_style = 1px dotted C0ff0000
+guidelines = 99 1px solid FF00003F, 109 2px dotted, 119 dashed

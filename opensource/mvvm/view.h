@@ -25,7 +25,8 @@ namespace mvvm
     {
         using view_model_type = typename ViewModel;
 
-        view() = default;
+        friend typename Derived;
+
         view(view_model_type const& viewModel)
             : m_viewModel(viewModel)
         {
@@ -38,6 +39,12 @@ namespace mvvm
         void ViewModel(view_model_type const& value)
         {
             base::set_property(m_viewModel, value, NAME_OF(view, ViewModel));
+        }
+
+    protected:
+        view()
+        {
+            static_assert(std::is_base_of_v<view_model_base<Derived>, Derived>, "Derived class must inherit from view_model_base");
         }
 
     private:

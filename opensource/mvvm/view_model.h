@@ -19,9 +19,7 @@ namespace mvvm
     template <typename Derived>
     struct __declspec(empty_bases) view_model : view_model_base<Derived>
     {
-        view_model() : view_model(nullptr)
-        {
-        }
+        friend typename Derived;
 
         view_model(winrt::Windows::UI::Core::CoreDispatcher const& dispatcher)
         {
@@ -42,7 +40,17 @@ namespace mvvm
         winrt::Windows::UI::Core::CoreDispatcher Dispatcher() const { return m_dispatcher; }
 
         winrt::Windows::UI::Core::CoreDispatcher get_dispatcher_override() { return m_dispatcher; }
+
     private:
+        view_model() : view_model(nullptr)
+        {
+            // Default constructor is private to ensure that the view_model is always constructed with a dispatcher.
+            // This prevents issues with UI thread access.
+            static_assert(!std::is_same_v<Derived, view_model>, "Default constructor is not allowed for view_model.");
+            static_assert(std::is_base_of_v<view_model<Derived>, Derived>, "Derived class must inherit from view_model");
+        }
+
+    protected:
         winrt::Windows::UI::Core::CoreDispatcher m_dispatcher{ nullptr };
     };
 }

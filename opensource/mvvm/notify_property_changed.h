@@ -25,6 +25,8 @@ namespace mvvm
     template <typename Derived>
     struct __declspec(empty_bases) notify_property_changed
     {
+        friend typename Derived;
+
     #pragma region INotifyPropertyChanged
         winrt::event_token PropertyChanged(winrt::Windows::UI::Xaml::Data::PropertyChangedEventHandler const& handler)
         {
@@ -40,6 +42,12 @@ namespace mvvm
 
     protected:
         static constexpr std::nullptr_t nullptr_ref{};
+        notify_property_changed()
+        {
+            // This is used to ensure that the derived class is actually derived from notify_property_changed
+            // and not just a base class of it.
+            static_assert(std::is_base_of_v<notify_property_changed<Derived>, Derived>);
+        }
 
     #pragma region get_property
 
@@ -58,13 +66,13 @@ namespace mvvm
         template <typename Value>
         Value get_property(Value const& valueField)
         {
-            return derived_this().get_property_core(valueField);
+            return derived().get_property_core(valueField);
         }
 
         template <typename Value>
         Value get_property(Value const& valueField) const
         {
-            return derived_this().get_property_core(valueField);
+            return derived().get_property_core(valueField);
         }
 
     #pragma endregion
@@ -74,25 +82,25 @@ namespace mvvm
         template <typename Value>
         bool set_property(Value& valueField, Value const& newValue, std::wstring_view const& propertyName)
         {
-            return derived_this().set_property_override<Value, const std::nullptr_t, true, decltype(propertyName)>(valueField, newValue, nullptr_ref, propertyName);
+            return derived().set_property_override<Value, const std::nullptr_t, true, decltype(propertyName)>(valueField, newValue, nullptr_ref, propertyName);
         }
 
         template <typename Value>
         bool set_property(Value& valueField, Value const& newValue, Value& oldValue, std::wstring_view const& propertyName)
         {
-            return derived_this().set_property_override<Value, Value, true, decltype(propertyName)>(valueField, newValue, oldValue, propertyName);
+            return derived().set_property_override<Value, Value, true, decltype(propertyName)>(valueField, newValue, oldValue, propertyName);
         }
 
         template <typename Value>
         bool set_property(Value& valueField, Value const& newValue, std::initializer_list<const std::wstring_view> propertyNames)
         {
-            return derived_this().set_property_override<Value, const std::nullptr_t, true, decltype(propertyNames)>(valueField, newValue, nullptr_ref, propertyNames);
+            return derived().set_property_override<Value, const std::nullptr_t, true, decltype(propertyNames)>(valueField, newValue, nullptr_ref, propertyNames);
         }
 
         template <typename Value>
         bool set_property(Value& valueField, Value const& newValue, Value& oldValue, std::initializer_list<const std::wstring_view> propertyNames)
         {
-            return derived_this().set_property_override<Value, Value, true, decltype(propertyNames)>(valueField, newValue, oldValue, propertyNames);
+            return derived().set_property_override<Value, Value, true, decltype(propertyNames)>(valueField, newValue, oldValue, propertyNames);
         }
 
     #pragma endregion
@@ -102,13 +110,13 @@ namespace mvvm
         template <typename Value>
         bool set_property(Value& valueField, Value const& newValue)
         {
-            return derived_this().set_property_override<Value, const std::nullptr_t, true, const std::nullptr_t>(valueField, newValue, nullptr_ref, nullptr_ref);
+            return derived().set_property_override<Value, const std::nullptr_t, true, const std::nullptr_t>(valueField, newValue, nullptr_ref, nullptr_ref);
         }
 
         template <typename Value>
         bool set_property(Value& valueField, Value const& newValue, Value& oldValue)
         {
-            return derived_this().set_property_override<Value, Value, true, const std::nullptr_t>(valueField, newValue, oldValue, nullptr_ref);
+            return derived().set_property_override<Value, Value, true, const std::nullptr_t>(valueField, newValue, oldValue, nullptr_ref);
         }
 
     #pragma endregion
@@ -118,25 +126,25 @@ namespace mvvm
         template <typename Value>
         void set_property_no_compare(Value& valueField, Value const& newValue, std::wstring_view const& propertyName)
         {
-            derived_this().set_property_override<Value, const std::nullptr_t, false, decltype(propertyName)>(valueField, newValue, nullptr_ref, propertyName);
+            derived().set_property_override<Value, const std::nullptr_t, false, decltype(propertyName)>(valueField, newValue, nullptr_ref, propertyName);
         }
 
         template <typename Value>
         void set_property_no_compare(Value& valueField, Value const& newValue, Value& oldValue, std::wstring_view const& propertyName)
         {
-            derived_this().set_property_override<Value, Value, false, decltype(propertyName)>(valueField, newValue, oldValue, propertyName);
+            derived().set_property_override<Value, Value, false, decltype(propertyName)>(valueField, newValue, oldValue, propertyName);
         }
 
         template <typename Value>
         void set_property_no_compare(Value& valueField, Value const& newValue, std::initializer_list<const std::wstring_view> propertyNames)
         {
-            derived_this().set_property_override<Value, const std::nullptr_t, false, decltype(propertyNames)>(valueField, newValue, nullptr_ref, propertyNames);
+            derived().set_property_override<Value, const std::nullptr_t, false, decltype(propertyNames)>(valueField, newValue, nullptr_ref, propertyNames);
         }
 
         template <typename Value>
         void set_property_no_compare(Value& valueField, Value const& newValue, Value& oldValue, std::initializer_list<const std::wstring_view> propertyNames)
         {
-            derived_this().set_property_override<Value, Value, false, decltype(propertyNames)>(valueField, newValue, oldValue, propertyNames);
+            derived().set_property_override<Value, Value, false, decltype(propertyNames)>(valueField, newValue, oldValue, propertyNames);
         }
 
     #pragma endregion
@@ -146,13 +154,13 @@ namespace mvvm
         template <typename Value>
         void set_property_no_compare_no_notify(Value& valueField, Value const& newValue)
         {
-            derived_this().set_property_override<Value, const std::nullptr_t, false, const std::nullptr_t>(valueField, newValue, nullptr_ref, nullptr_ref);
+            derived().set_property_override<Value, const std::nullptr_t, false, const std::nullptr_t>(valueField, newValue, nullptr_ref, nullptr_ref);
         }
 
         template <typename Value>
         void set_property_no_compare_no_notify(Value& valueField, Value const& newValue, Value& oldValue)
         {
-            derived_this().set_property_override<Value, Value, false, const std::nullptr_t>(valueField, newValue, oldValue, nullptr_ref);
+            derived().set_property_override<Value, Value, false, const std::nullptr_t>(valueField, newValue, oldValue, nullptr_ref);
         }
 
     #pragma endregion
@@ -204,21 +212,21 @@ namespace mvvm
             return valueChanged;
         }
 
-        Derived& derived_this()
+        Derived& derived()
         {
-            return *static_cast<Derived*>(this);
+            return static_cast<Derived&>(*this);
         }
 
-        Derived const& derived_this() const
+        Derived const& derived() const
         {
-            return *static_cast<Derived const*>(this);
+            return static_cast<Derived const&>(*this);
         }
 
     public:
         template <typename Value>
         Value get_property_override(Value const& valueField)
         {
-            return derived_this().get_property_core(valueField);
+            return derived().get_property_core(valueField);
         }
 
         template <typename Value, typename OldValue, bool compare, typename PropertyName>
@@ -233,11 +241,11 @@ namespace mvvm
 
         void raise_PropertyChanged(std::wstring_view const& propertyName)
         {
-            // Only instantiate the argumens class if the event has any listeners
+            // Only instantiate the arguments class if the event has any listeners
             if (m_eventPropertyChanged)
             {
                 winrt::Windows::UI::Xaml::Data::PropertyChangedEventArgs args{ propertyName };
-                m_eventPropertyChanged(derived_this(), args);
+                m_eventPropertyChanged(derived(), args);
             }
         }
 
@@ -249,7 +257,7 @@ namespace mvvm
                 for (auto&& propertyName : propertyNames)
                 {
                     winrt::Windows::UI::Xaml::Data::PropertyChangedEventArgs args{ propertyName };
-                    m_eventPropertyChanged(derived_this(), args);
+                    m_eventPropertyChanged(derived(), args);
                 }
             }
         }
