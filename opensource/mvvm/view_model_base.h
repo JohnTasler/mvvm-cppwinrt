@@ -75,7 +75,7 @@ namespace mvvm
         // This is used to ensure that the derived class is actually derived from view_model_base
         view_model_base()
         {
-            static_assert(std::is_base_of_v<view_model_base<Derived>, Derived>, "Derived class must inherit from view_model_base");
+            static_assert(std::is_base_of_v<view_model_base, Derived>, "Derived class must inherit from view_model_base");
         }
         using base = typename ::mvvm::notify_property_changed<Derived>;
     };

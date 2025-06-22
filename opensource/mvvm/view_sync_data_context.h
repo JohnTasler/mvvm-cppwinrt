@@ -25,6 +25,7 @@ namespace mvvm
         : view_model_base<Derived>
     {
         using view_model_type = typename ViewModel;
+        using view_base_type = typename view_sync_data_context<Derived, ViewModel>;
 
         friend typename Derived;
 
@@ -51,7 +52,7 @@ namespace mvvm
             });
         }
 
-        view_sync_data_context(view_model_base const& viewModel)
+        view_sync_data_context(view_model_type const& viewModel)
         {
             this->derived().DataContext(viewModel);
         }
