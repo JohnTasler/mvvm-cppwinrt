@@ -20,9 +20,4 @@ namespace winrt::mvvm::tests::implementation
     {
         InitializeComponent();
     }
-
-    void MyEntityView::ClickMeButton_Click(IInspectable const&, RoutedEventArgs const&)
-    {
-        ClickMeButton().Content(box_value(L"Clicked"));
-    }
 }

@@ -1,6 +1,6 @@
 //*********************************************************
 //
-//    Copyright (c) Microsoft. All rights reserved.
+//    Copyright (c) John Tasler. All rights reserved.
 //    This code is licensed under the MIT License.
 //    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
 //    ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
@@ -17,8 +17,7 @@
 #include <initializer_list>
 #include <string_view>
 #include <type_traits>
-
-#include <CppUnitTest.h>
+#include <variant>
 
 #include <wil/cppwinrt.h>
 
@@ -26,6 +25,9 @@
 #undef GetCurrentTime
 #endif
 
+#include <winrt/Windows.ApplicationModel.h>
+#include <winrt/Windows.ApplicationModel.Activation.h>
+#include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.UI.Core.h>
 #include <winrt/Windows.UI.Xaml.h>
 #include <winrt/Windows.UI.Xaml.Controls.h>
@@ -35,6 +37,8 @@
 #include <winrt/Windows.UI.Xaml.Interop.h>
 #include <winrt/Windows.UI.Xaml.Markup.h>
 
+#include <mvvm/delegate_command.h>
+#include <mvvm/property_macros.h>
 #include <mvvm/view.h>
 #include <mvvm/view_model.h>
 

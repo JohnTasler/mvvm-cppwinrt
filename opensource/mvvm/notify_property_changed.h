@@ -1,6 +1,6 @@
 //*********************************************************
 //
-//    Copyright (c) Microsoft. All rights reserved.
+//    Copyright (c) John Tasler. All rights reserved.
 //    This code is licensed under the MIT License.
 //    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
 //    ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
@@ -236,7 +236,7 @@ namespace mvvm
             [[maybe_unused]] OldValue& oldValue,
             [[maybe_unused]] PropertyName const& propertyNameOrNames)
         {
-            set_property_core(valueField, newValue, oldValue, propertyNameOrNames);
+            return set_property_core(valueField, newValue, oldValue, propertyNameOrNames);
         }
 
         void raise_PropertyChanged(std::wstring_view const& propertyName)

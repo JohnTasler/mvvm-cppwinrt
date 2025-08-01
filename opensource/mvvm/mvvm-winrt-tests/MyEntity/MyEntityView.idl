@@ -10,6 +10,6 @@ namespace mvvm.tests
         MyEntityView();
         MyEntityView(MyEntityViewModel viewModel);
 
-        Windows.UI.Xaml.Controls.Button ClickMeButton;
+        MyEntityViewModel ViewModel;
     }
 }

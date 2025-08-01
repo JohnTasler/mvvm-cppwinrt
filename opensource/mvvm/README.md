@@ -101,7 +101,7 @@ void set_property_no_compare(Value& valueField, Value const& newValue, Value& ol
 ```
 
 - Extensible to allow derived classes to provide their own flavor of thread synchronization.
-: See the following ```view_model_base``` class for a discussion.
+See the following ```view_model_base``` class for a discussion.
 
 ### ```mvvm::view_model_base<Derived>``` ###
 ```cpp
@@ -153,10 +153,70 @@ the ```ViewModel``` property is sometimes a useful feature from XAML.
 #include <mvvm/delegate_command.h>
 ```
 
+#### Declaration ####
+```cpp
+template <typename Parameter>
+struct delegate_command;
+```
+
+#### Template Type Parameters
+```Parameter``` 
+: The type of data used by the command. If the command does not require data, this can be void.
+
+#### Description
 This class implements the command pattern, implementing ```ICommand``` by deferring to lambda expressions
 provided to the contructor. This pattern is used less often now since ```{x:Bind}``` is able to bind
 directly to a method. It may still be useful in cases where the ```CanExecute``` functionality is desired.
 It's also provided here for completeness of an MVVM base library.
+
+This class can be used with the ```winrt::make<T>``` method, or also as a member of another class.
+The non-default constructors are intended to be used to create an instance via ```winrt::make<T>```,
+although the default constructor can be used for this purpose also. In the case of the default
+constructor, the class should further be initialized using the ```delegate_command<T>.Initialize```
+method. Two overloads of ```Initialize``` take a reference to any ```IInspectable``` that owns the
+command object. Such ownership ensures that the final release of the ```ICommand``` object does not
+call ```delete``` on the object, since it is contained within an owning object. Also, the command
+holds a reference on the owner so that it cannot be deleted while any code holds a reference on the
+command.
+
+
+#### Public API
+
+```cpp
+// Constructors
+delegate_command() = default;
+
+template <typename ExecuteHandler>
+delegate_command(ExecuteHandler&& executeHandler);
+
+template <typename ExecuteHandler, typename CanExecuteHandler>
+delegate_command(ExecuteHandler&& executeHandler, CanExecuteHandler&& canExecuteHandler);
+
+// Initialization
+template <typename ExecuteHandler>
+void Initialize(ExecuteHandler&& executeHandler);
+
+template <typename ExecuteHandler, typename CanExecuteHandler>
+void Initialize(ExecuteHandler&& executeHandler, CanExecuteHandler&& canExecuteHandler);
+
+template <typename ExecuteHandler>
+void Initialize(IInspectable const& ownerObject, ExecuteHandler&& executeHandler);
+
+template <typename ExecuteHandler, typename CanExecuteHandler>
+void Initialize(IInspectable const& ownerObject, ExecuteHandler&& executeHandler, CanExecuteHandler&& canExecuteHandler);
+
+// ICommand implementation
+event_token CanExecuteChanged(EventHandler<Windows::Foundation::IInspectable> const& handler);
+void CanExecuteChanged(event_token token);
+bool CanExecute(IInspectable const& parameter);
+void Execute(IInspectable const& parameter);
+
+// Raises the CanExecuteChanged event
+void raise_CanExecuteChanged();
+
+// Checks for a non-initialized state
+operator bool();
+```
 
 ## Macros ##
 

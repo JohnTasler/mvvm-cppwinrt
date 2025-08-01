@@ -4,22 +4,53 @@
     <Filter Include="MyEntity">
       <UniqueIdentifier>{3241ec6b-b750-4ddd-8092-4a3237af915f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{158841D0-E081-48F0-A4E2-F1FEF3F3E50E}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="App.cpp" />
     <ClCompile Include="module.cpp" />
     <ClCompile Include="MyEntity\MyEntityView.cpp" />
     <ClCompile Include="MyEntity\MyEntityViewModel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="App.h" />
     <ClInclude Include="MyEntity\MyEntityViewModel.h">
       <Filter>MyEntity</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="module.def" />
     <None Include="packages.config" />
+    <None Include="mvvm-winrt-tests_TemporaryKey.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\SplashScreen.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square44x44Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square150x150Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\StoreLogo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Wide310x150Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\LockScreenLogo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="MyEntity\MyEntityViewModel.idl">
@@ -30,5 +61,12 @@
     <Page Include="MyEntity\MyEntityView.xaml">
       <Filter>MyEntity</Filter>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
+    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natstepfilter" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml" />
   </ItemGroup>
 </Project>
