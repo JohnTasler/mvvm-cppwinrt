@@ -2,6 +2,7 @@
 
 #include "MyEntityViewModel.h"
 #include "MyEntityView.g.h"
+
 #include <mvvm/view.h>
 
 namespace winrt::mvvm::tests::implementation

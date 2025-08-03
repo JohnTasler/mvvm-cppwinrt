@@ -10,7 +10,7 @@ namespace winrt::mvvm::tests::implementation
         : MyEntityViewModelT<MyEntityViewModel>
         , ::mvvm::view_model<MyEntityViewModel>
     {
-        MyEntityViewModel() = default;
+        MyEntityViewModel();
 
         int32_t MyProperty() { return get_property(m_myProperty); }
         void MyProperty(int32_t value) { set_property(m_myProperty, value, NAME_OF(MyEntityViewModel, MyProperty)); }
@@ -20,12 +20,18 @@ namespace winrt::mvvm::tests::implementation
 
         winrt::Windows::UI::Xaml::Input::ICommand IncrementCommand();
         winrt::Windows::UI::Xaml::Input::ICommand DecrementCommand();
+        winrt::Windows::UI::Xaml::Input::ICommand StringCommand();
+        winrt::Windows::UI::Xaml::Input::ICommand Int32Command();
 
     private:
         int32_t m_myProperty{};
 
-        ::mvvm::delegate_command<void> m_incrementCommand;
-        ::mvvm::delegate_command<void> m_decrementCommand;
+        bool m_firstTimeCleared{};
+
+        winrt::com_ptr<::mvvm::delegate_command<void>> m_incrementCommand{ nullptr };
+        winrt::com_ptr<::mvvm::delegate_command<IInspectable>> m_decrementCommand{ nullptr };
+        winrt::com_ptr<::mvvm::delegate_command<hstring>> m_stringCommand{ nullptr };
+        winrt::com_ptr<::mvvm::delegate_command<int32_t>> m_int32Command{ nullptr };
     };
 }
 

@@ -14,7 +14,6 @@
 
 #include <functional>
 #include <type_traits>
-#include <variant>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.UI.Xaml.Input.h>
 #include <wil/com.h>
@@ -22,111 +21,39 @@
 
 namespace mvvm
 {
-    struct __declspec(empty_bases) delegate_command_base
-        : winrt::implements<delegate_command_base, winrt::Windows::UI::Xaml::Input::ICommand>
+    inline namespace
     {
-    #if defined(_DEBUG) && !defined(WINRT_NO_MAKE_DETECTION)
-        void use_make_function_to_create_this_object() override {}
-    #endif
-
-    #pragma region ICommand
-
-        DEFINE_EVENT(winrt::Windows::Foundation::EventHandler<IInspectable>, CanExecuteChanged);
-        virtual bool CanExecute(IInspectable const& parameter) = 0;
-        virtual void Execute(IInspectable const& parameter) = 0;
-
-    #pragma endregion
-
-        void raise_CanExecuteChanged()
-        {
-            if (m_eventCanExecuteChanged)
-            {
-                m_eventCanExecuteChanged(*this, IInspectable{ nullptr });
-            }
-        }
-
-        static void final_release(std::unique_ptr<delegate_command_base> ptr) noexcept
-        {
-            if (ptr->m_ownerObject)
-            {
-                ptr->m_ownerObject = nullptr;
-                ptr.release();
-            }
-        }
-
-    protected:
-        wil::com_ptr<::IUnknown> m_ownerObject;
-    };
+        namespace wf = ::winrt::Windows::Foundation;
+    }
 
     template <typename Parameter>
-    struct delegate_command : delegate_command_base
+    struct delegate_command :
+        winrt::implements<delegate_command<Parameter>, winrt::Windows::UI::Xaml::Input::ICommand>
     {
-    #pragma region construction
+        // Types
+        using NakedParameterType = std::conditional_t<std::is_same_v<Parameter, void>, void, std::remove_const_t<std::remove_reference_t<Parameter>>>;
+        using ConstParameterType = std::conditional_t<std::is_same_v<Parameter, void>, void, std::add_const_t<NakedParameterType>>;
+        using ExecuteHandler = std::function<void(std::add_lvalue_reference_t<ConstParameterType>)>;
+        using CanExecuteHandler = std::function<bool(std::add_lvalue_reference_t<ConstParameterType>)>;
 
-        delegate_command() = default;
+        // construction
+        delegate_command() noexcept {}
+        delegate_command(std::nullptr_t) noexcept {}
 
-        template <typename ExecuteHandler>
         delegate_command(ExecuteHandler&& executeHandler)
             : m_executeHandler(std::move(executeHandler))
         {
-            static_assert(std::is_invocable_v<ExecuteHandler, Parameter>);
         }
 
-        template <typename ExecuteHandler, typename CanExecuteHandler>
         delegate_command(ExecuteHandler&& executeHandler, CanExecuteHandler&& canExecuteHandler)
             : m_executeHandler(std::move(executeHandler))
             , m_canExecuteHandler(std::move(canExecuteHandler))
         {
-            static_assert(std::is_invocable_v<ExecuteHandler, Parameter>);
-            static_assert(std::is_invocable_r_v<bool, CanExecuteHandler, Parameter>);
         }
 
-        template <typename ExecuteHandler>
-        void Initialize(ExecuteHandler&& executeHandler)
-        {
-            static_assert(std::is_invocable_v<ExecuteHandler, Parameter>);
-
-            if (m_executeHandler)
-            {
-                throw winrt::hresult_changed_state(L"Object has already been initialized: mvvm::delegate_command");
-            }
-
-            m_executeHandler = std::move(executeHandler);
-        }
-
-        template <typename ExecuteHandler, typename CanExecuteHandler>
-        void Initialize(ExecuteHandler&& executeHandler, CanExecuteHandler&& canExecuteHandler)
-        {
-            static_assert(std::is_invocable_v<ExecuteHandler, Parameter>);
-            static_assert(std::is_invocable_r_v<bool, CanExecuteHandler, Parameter>);
-
-            this->Initialize<ExecuteHandler>(std::move(executeHandler));
-            m_canExecuteHandler = std::move(canExecuteHandler);
-        }
-
-        template <typename ExecuteHandler>
-        void Initialize(IInspectable const& ownerObject, ExecuteHandler&& executeHandler)
-        {
-            static_assert(std::is_invocable_v<ExecuteHandler, Parameter>);
-
-            m_ownerObject = winrt::get_unknown(ownerObject);
-            this->Initialize(executeHandler);
-        }
-
-        template <typename ExecuteHandler, typename CanExecuteHandler>
-        void Initialize(IInspectable const& ownerObject, ExecuteHandler&& executeHandler, CanExecuteHandler&& canExecuteHandler)
-        {
-            static_assert(std::is_invocable_v<ExecuteHandler, Parameter>);
-            static_assert(std::is_invocable_r_v<bool, CanExecuteHandler, Parameter>);
-
-            this->Initialize<ExecuteHandler>(ownerObject, std::move(executeHandler));
-            m_canExecuteHandler = std::move(canExecuteHandler);
-        }
-
-    #pragma endregion
-
-    #pragma region ICommand
-        bool CanExecute(winrt::Windows::Foundation::IInspectable const& parameter) override
+        // ICommand interface methods
+        DEFINE_EVENT_WITH_RAISE(wf::EventHandler<wf::IInspectable>, CanExecuteChanged, wf::IInspectable);
+        bool CanExecute(wf::IInspectable const& parameter)
         {
             if (!m_canExecuteHandler)
             {
@@ -136,150 +63,46 @@ namespace mvvm
             {
                 return false;
             }
-            else if constexpr (std::is_same_v<Parameter, winrt::Windows::Foundation::IInspectable>)
-            {
-                return std::invoke(m_canExecuteHandler, parameter);
-            }
-            else if constexpr (std::is_convertible_v<Parameter, winrt::Windows::Foundation::IInspectable>)
-            {
-                return std::invoke(m_canExecuteHandler, parameter.try_as<Parameter>());
-            }
-            else
-            {
-                return std::invoke(m_canExecuteHandler, winrt::unbox_value(parameter));
-            }
-        }
-
-        void Execute(winrt::Windows::Foundation::IInspectable const& parameter) override
-        {
-            if (this->CanExecute(parameter))
-            {
-                if constexpr (std::is_same_v<Parameter, winrt::Windows::Foundation::IInspectable>)
-                {
-                    std::invoke(m_executeHandler, parameter);
-                }
-                else if constexpr (std::is_convertible_v<Parameter, winrt::Windows::Foundation::IInspectable>)
-                {
-                    std::invoke(m_executeHandler, parameter.try_as<Parameter>());
-                }
-                else
-                {
-                    std::invoke(m_executeHandler, winrt::unbox_value(parameter));
-                }
-            }
-        }
-
-    #pragma endregion
-
-        operator bool() { return (bool)m_executeHandler; }
-
-    #pragma region instance fields
-    private:
-        std::function<void(Parameter const&)> m_executeHandler;
-        std::function<bool(Parameter const&)> m_canExecuteHandler;
-    #pragma endregion
-    };
-
-    template <>
-    struct delegate_command<void> : delegate_command_base
-    {
-    #pragma region construction
-
-        delegate_command() = default;
-
-        template <typename ExecuteHandler>
-        delegate_command(ExecuteHandler&& executeHandler)
-            : m_executeHandler(std::move(executeHandler))
-        {
-            static_assert(std::is_invocable_v<ExecuteHandler>);
-        }
-
-        template <typename ExecuteHandler, typename CanExecuteHandler>
-        delegate_command(ExecuteHandler&& executeHandler, CanExecuteHandler&& canExecuteHandler)
-            : m_executeHandler(std::move(executeHandler))
-            , m_canExecuteHandler(std::move(canExecuteHandler))
-        {
-            static_assert(std::is_invocable_v<ExecuteHandler>);
-            static_assert(std::is_invocable_r_v<bool, CanExecuteHandler>);
-        }
-
-        template <typename ExecuteHandler>
-        void Initialize(ExecuteHandler&& executeHandler)
-        {
-            static_assert(std::is_invocable_v<ExecuteHandler>);
-
-            if (m_executeHandler)
-            {
-                throw winrt::hresult_changed_state(L"Object has already been initialized: mvvm::delegate_command");
-            }
-
-            m_executeHandler = std::move(executeHandler);
-        }
-
-        template <typename ExecuteHandler, typename CanExecuteHandler>
-        void Initialize(ExecuteHandler&& executeHandler, CanExecuteHandler&& canExecuteHandler)
-        {
-            static_assert(std::is_invocable_v<ExecuteHandler>);
-            static_assert(std::is_invocable_r_v<bool, CanExecuteHandler>);
-
-            this->Initialize<ExecuteHandler>(std::move(executeHandler));
-            m_canExecuteHandler = std::move(canExecuteHandler);
-        }
-
-        template <typename ExecuteHandler>
-        void Initialize(IInspectable const& ownerObject, ExecuteHandler&& executeHandler)
-        {
-            static_assert(std::is_invocable_v<ExecuteHandler>);
-
-            m_ownerObject = winrt::get_unknown(ownerObject);
-            this->Initialize(executeHandler);
-        }
-
-        template <typename ExecuteHandler, typename CanExecuteHandler>
-        void Initialize(IInspectable const& ownerObject, ExecuteHandler&& executeHandler, CanExecuteHandler&& canExecuteHandler)
-        {
-            static_assert(std::is_invocable_v<ExecuteHandler>);
-            static_assert(std::is_invocable_r_v<bool, CanExecuteHandler>);
-
-            this->Initialize<ExecuteHandler>(ownerObject, std::move(executeHandler));
-            m_canExecuteHandler = std::move(canExecuteHandler);
-        }
-
-    #pragma endregion
-
-    #pragma region ICommand
-        bool CanExecute([[maybe_unused]] winrt::Windows::Foundation::IInspectable const& parameter) override
-        {
-            if (!m_canExecuteHandler)
-            {
-                return true;
-            }
-            else if (!m_executeHandler)
-            {
-                return false;
-            }
-            else
+            else if constexpr (std::is_same_v<Parameter, void>)
             {
                 return std::invoke(m_canExecuteHandler);
             }
-        }
-
-        void Execute([[maybe_unused]] winrt::Windows::Foundation::IInspectable const& parameter) override
-        {
-            if (this->CanExecute(parameter))
+            else if constexpr (std::is_same_v<NakedParameterType, wf::IInspectable>)
             {
-                std::invoke(m_executeHandler);
+                return std::invoke(m_canExecuteHandler, parameter);
+            }
+            else if constexpr (std::is_convertible_v<NakedParameterType, wf::IInspectable>)
+            {
+                return std::invoke(m_canExecuteHandler, parameter.try_as<NakedParameterType>());
+            }
+            else
+            {
+                return std::invoke(m_canExecuteHandler, winrt::unbox_value_or<NakedParameterType>(parameter, {}));
             }
         }
-    #pragma endregion
+        void Execute(wf::IInspectable const& parameter)
+        {
+            if constexpr (std::is_same_v<Parameter, void>)
+            {
+                return std::invoke(m_executeHandler);
+            }
+            else if constexpr (std::is_same_v<NakedParameterType, wf::IInspectable>)
+            {
+                std::invoke(m_executeHandler, parameter);
+            }
+            else if constexpr (std::is_convertible_v<NakedParameterType, wf::IInspectable>)
+            {
+                std::invoke(m_executeHandler, parameter.try_as<NakedParameterType>());
+            }
+            else
+            {
+                std::invoke(m_executeHandler, winrt::unbox_value_or<NakedParameterType>(parameter, {}));
+            }
+        }
 
-        operator bool() { return (bool)m_executeHandler; }
-
-    #pragma region instance fields
     private:
-        std::function<void()> m_executeHandler;
-        std::function<bool()> m_canExecuteHandler;
-    #pragma endregion
+        ExecuteHandler m_executeHandler;
+        CanExecuteHandler m_canExecuteHandler;
     };
 }
 

@@ -1,3 +1,5 @@
+#define WUXC Windows.UI.Xaml.Controls
+
 import "MyEntityViewModel.idl";
 
 namespace mvvm.tests
@@ -11,5 +13,6 @@ namespace mvvm.tests
         MyEntityView(MyEntityViewModel viewModel);
 
         MyEntityViewModel ViewModel;
+        WUXC.TextBlock TextBlock;
     }
 }

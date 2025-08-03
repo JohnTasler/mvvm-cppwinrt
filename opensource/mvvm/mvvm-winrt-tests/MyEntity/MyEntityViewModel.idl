@@ -14,5 +14,7 @@ namespace mvvm.tests
 
         WUXI.ICommand IncrementCommand{ get; };
         WUXI.ICommand DecrementCommand{ get; };
+        WUXI.ICommand StringCommand{ get; };
+        WUXI.ICommand Int32Command{ get; };
     }
 }

@@ -31,6 +31,19 @@ using namespace std::literals;
         }
 #endif
 
+#ifndef DEFINE_EVENT_WITH_RAISE
+#define DEFINE_EVENT_WITH_RAISE(eventType, name, argsType) \
+    DEFINE_EVENT(eventType, name) \
+    void raise_##name(argsType const& args = {nullptr}) \
+    { \
+        if (m_event##name) \
+        { \
+            m_event##name(*this, args); \
+        } \
+    }
+
+#endif
+
 
 #ifndef DEFINE_PROPERTY_READONLY
 #define DEFINE_PROPERTY_READONLY(type, name, defaultValue) \

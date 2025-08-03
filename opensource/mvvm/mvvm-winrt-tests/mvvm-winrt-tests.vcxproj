@@ -153,6 +153,10 @@
       <DependentUpon>MyEntity\MyEntityViewModel.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="ValueConverters\StringToInt32ValueConverter.h">
+      <DependentUpon>StringToInt32ValueConverter.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +170,10 @@
     </ClCompile>
     <ClCompile Include="MyEntity\MyEntityViewModel.cpp">
       <DependentUpon>MyEntity\MyEntityViewModel.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="ValueConverters\StringToInt32ValueConverter.cpp">
+      <DependentUpon>StringToInt32ValueConverter.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="pch.cpp">
@@ -193,6 +201,7 @@
       <SubType>Code</SubType>
     </Midl>
     <Midl Include="MyEntity\MyEntityViewModel.idl" />
+    <Midl Include="ValueConverters\StringToInt32ValueConverter.idl" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">

@@ -165,45 +165,41 @@ struct delegate_command;
 
 #### Description
 This class implements the command pattern, implementing ```ICommand``` by deferring to lambda expressions
-provided to the contructor. This pattern is used less often now since ```{x:Bind}``` is able to bind
+provided to the contructor. This pattern is used less often now since ```{x:Bind}``` can bind
 directly to a method. It may still be useful in cases where the ```CanExecute``` functionality is desired.
 It's also provided here for completeness of an MVVM base library.
 
-This class can be used with the ```winrt::make<T>``` method, or also as a member of another class.
-The non-default constructors are intended to be used to create an instance via ```winrt::make<T>```,
-although the default constructor can be used for this purpose also. In the case of the default
-constructor, the class should further be initialized using the ```delegate_command<T>.Initialize```
-method. Two overloads of ```Initialize``` take a reference to any ```IInspectable``` that owns the
-command object. Such ownership ensures that the final release of the ```ICommand``` object does not
-call ```delete``` on the object, since it is contained within an owning object. Also, the command
-holds a reference on the owner so that it cannot be deleted while any code holds a reference on the
-command.
+To create an instance, use the ```winrt::make_self``` function and store the returned object in a
+ ```winrt::com_ptr```. Like this:
 
+```cpp
+// in the .h file:
+    winrt::com_ptr<::mvvm::delegate_command<void>> m_incrementCommand{ nullptr };
+
+// in the .cpp file:
+    m_incrementCommand = winrt::make_self<::mvvm::delegate_command<void>>(
+        [this]() { MyProperty(MyProperty() + 1); },
+        [this]() { return IsIncrementAvailable(); } );
+
+// then return it (usually as a property getter) as an ```ICommand``` interface:
+ICommand MyEntityViewModel::IncrementCommand()
+{
+    return *m_incrementCommand;
+}
+```
 
 #### Public API
 
 ```cpp
 // Constructors
-delegate_command() = default;
+delegate_command() noexcept {}
+delegate_command(std::nullptr_t) noexcept {}
 
 template <typename ExecuteHandler>
 delegate_command(ExecuteHandler&& executeHandler);
 
 template <typename ExecuteHandler, typename CanExecuteHandler>
 delegate_command(ExecuteHandler&& executeHandler, CanExecuteHandler&& canExecuteHandler);
-
-// Initialization
-template <typename ExecuteHandler>
-void Initialize(ExecuteHandler&& executeHandler);
-
-template <typename ExecuteHandler, typename CanExecuteHandler>
-void Initialize(ExecuteHandler&& executeHandler, CanExecuteHandler&& canExecuteHandler);
-
-template <typename ExecuteHandler>
-void Initialize(IInspectable const& ownerObject, ExecuteHandler&& executeHandler);
-
-template <typename ExecuteHandler, typename CanExecuteHandler>
-void Initialize(IInspectable const& ownerObject, ExecuteHandler&& executeHandler, CanExecuteHandler&& canExecuteHandler);
 
 // ICommand implementation
 event_token CanExecuteChanged(EventHandler<Windows::Foundation::IInspectable> const& handler);
@@ -213,9 +209,6 @@ void Execute(IInspectable const& parameter);
 
 // Raises the CanExecuteChanged event
 void raise_CanExecuteChanged();
-
-// Checks for a non-initialized state
-operator bool();
 ```
 
 ## Macros ##
@@ -232,11 +225,10 @@ NAME_OF_NARROW(typeName, propertyName)
 #### Macro Parameters
 
 ```typeName``` 
-: The name of the type that implements a member specified as ```propertyName```. This is not a
-string value - only the plain text name of the type.
+| The ```class``` or ```struct``` that implements the property. This is not a string value.
 
 ```propertyName``` 
-: The name of the class/struct that implements the property. This is not a string value.
+| The name of the property. This is not a string value - only the plain text name of the property.
 
 #### Description
 
@@ -252,28 +244,66 @@ leaving only the ```string_view``` to ```propertyName```. Because these return a
 ```string_view```, the result can be directly compared to a ```wchar_t*``` or ```char*```, respectively
 (whether ```const``` or not).
 
-### Event macros ###
+### ```DEFINE_EVENT``` and ```DEFINE_EVENT_WITH_RAISE```
 
 ```cpp
 DEFINE_EVENT(type, name)
+DEFINE_EVENT_WITH_RAISE(eventType, name, argsType)
 ```
+#### Macro Parameters
 
 ```type```
-: The event handler type, such as ```RoutedEventHandler```.
+| The event handler type, such as ```RoutedEventHandler```.
 
 ```name```
-: The event name.
+| The event name.
 
-### Trivial/Common Property macros ###
+```argsType```
+| The event paramter type, such as ```RoutedEventArgs```.
+
+#### Description
+These macros each expand to code similar to the following, where ```##type##``` and ```##name##```
+are substitued with the specified macro parameters.
+```cpp
+private:
+    winrt::event<type> m_event##name;
+public:
+    winrt::event_token name##(type const& handler)
+    {
+        return m_event##name.add(handler);
+    }
+    void name##(winrt::event_token token)
+    {
+        m_event##name.remove(token);
+    }
+```
+When ```DEFINE_EVENT_WITH_RAISE``` is used, it does the above but also expands to a method with the
+following naming pattern, signature, and implementation:
+```cpp
+void raise_##name##(argsType const& args = {nullptr})
+{
+    if (m_event##name)
+    {
+        m_event##name(*this, args);
+    }
+}
+```
+This ```raise_##name##``` method will pass the ```args``` parameter to the event subscribers as the
+2nd parameter, with the 1st parameter being ```*this```. Therefore the macro only works for event
+handler delegates with two paramers, ```sender``` and ```args```.
+### ```DEFINE_PROPERTY*``` macros
 ```cpp
 #include <mvvm/property_macros.h>
+```
+#### Declaration
 
+```cpp
 DEFINE_PROPERTY(type, name, defaulValue)
 DEFINE_PROPERTY_PRIVATE_SET(type, name, defaulValue)
 DEFINE_PROPERTY_PROTECTED_SET(type, name, defaulValue)
 DEFINE_PROPERTY_READONLY(type, name, defaulValue)
 ```
-
+#### Macro Parameters
 ```type```
 : The type of the property.
 
@@ -282,6 +312,11 @@ DEFINE_PROPERTY_READONLY(type, name, defaulValue)
 
 ```defaultValue```
 : Use ```{}``` for the type's default value.
+
+#### Description
+This set of macros declares and implements a property's ```get``` and ```set``` accesors, as well
+as the backing data field. They are implemented with the assumption that the class is derived from,
+directly or indirectly, ```notify_property_changed``` class.
 
 ### Property macros with callback when the value changes ###
 ```cpp

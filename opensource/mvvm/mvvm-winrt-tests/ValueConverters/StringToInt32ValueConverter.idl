@@ -1,0 +1,11 @@
+#define WUXD Windows.UI.Xaml.Data
+#define WUXI Windows.UI.Xaml.Input
+
+namespace mvvm.tests
+{
+    [default_interface]
+    runtimeclass StringToInt32ValueConverter : WUXD.IValueConverter
+    {
+        StringToInt32ValueConverter();
+    }
+}
