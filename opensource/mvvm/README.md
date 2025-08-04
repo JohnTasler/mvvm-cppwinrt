@@ -20,11 +20,11 @@ template <typename Derived>
 struct __declspec(empty_bases) notify_property_changed
 ```
 
-#### Template Type Parameters
+#### Template Type Parameters ####
 ```Derived``` 
 : The most-derived class; the one that you're implementing.
 
-#### Description
+#### Description ####
 
 This file implements the ```notify_property_changed<Derived>``` class template, which implements a base
 implementation of ```INotifyPropertyChanged```. Although that interface only declares 1 member (the
@@ -159,13 +159,13 @@ template <typename Parameter>
 struct delegate_command;
 ```
 
-#### Template Type Parameters
+#### Template Type Parameters ####
 ```Parameter``` 
 : The type of data used by the command. If the command does not require data, this can be void.
 
-#### Description
+#### Description ####
 This class implements the command pattern, implementing ```ICommand``` by deferring to lambda expressions
-provided to the contructor. This pattern is used less often now since ```{x:Bind}``` can bind
+provided to the constructor. This pattern is used less often now since ```{x:Bind}``` can bind
 directly to a method. It may still be useful in cases where the ```CanExecute``` functionality is desired.
 It's also provided here for completeness of an MVVM base library.
 
@@ -188,7 +188,7 @@ ICommand MyEntityViewModel::IncrementCommand()
 }
 ```
 
-#### Public API
+#### Public API ####
 
 ```cpp
 // Constructors
@@ -199,7 +199,7 @@ template <typename ExecuteHandler>
 delegate_command(ExecuteHandler&& executeHandler);
 
 template <typename ExecuteHandler, typename CanExecuteHandler>
-delegate_command(ExecuteHandler&& executeHandler, CanExecuteHandler&& canExecuteHandler);
+delegate_command(ExecuteHandler executeHandler, CanExecuteHandler&& canExecuteHandler);
 
 // ICommand implementation
 event_token CanExecuteChanged(EventHandler<Windows::Foundation::IInspectable> const& handler);
@@ -222,7 +222,7 @@ void raise_CanExecuteChanged();
 NAME_OF(typeName, propertyName)
 NAME_OF_NARROW(typeName, propertyName)
 ```
-#### Macro Parameters
+#### Macro Parameters ####
 
 ```typeName``` 
 | The ```class``` or ```struct``` that implements the property. This is not a string value.
@@ -230,7 +230,7 @@ NAME_OF_NARROW(typeName, propertyName)
 ```propertyName``` 
 | The name of the property. This is not a string value - only the plain text name of the property.
 
-#### Description
+#### Description ####
 
 ```NAME_OF``` (and ```NAME_OF_NARROW``` for 8-bit characters) can be used to get the name of a property as a
 ```wstring_view``` or ```string_view``` ```constexpr```. This is commonly needed when checking which
@@ -244,13 +244,13 @@ leaving only the ```string_view``` to ```propertyName```. Because these return a
 ```string_view```, the result can be directly compared to a ```wchar_t*``` or ```char*```, respectively
 (whether ```const``` or not).
 
-### ```DEFINE_EVENT``` and ```DEFINE_EVENT_WITH_RAISE```
+### ```DEFINE_EVENT``` and ```DEFINE_EVENT_WITH_RAISE``` ###
 
 ```cpp
 DEFINE_EVENT(type, name)
 DEFINE_EVENT_WITH_RAISE(eventType, name, argsType)
 ```
-#### Macro Parameters
+#### Macro Parameters ####
 
 ```type```
 | The event handler type, such as ```RoutedEventHandler```.
@@ -259,9 +259,9 @@ DEFINE_EVENT_WITH_RAISE(eventType, name, argsType)
 | The event name.
 
 ```argsType```
-| The event paramter type, such as ```RoutedEventArgs```.
+| The event parameter type, such as ```RoutedEventArgs```.
 
-#### Description
+#### Description ####
 These macros each expand to code similar to the following, where ```##type##``` and ```##name##```
 are substitued with the specified macro parameters.
 ```cpp
@@ -291,30 +291,30 @@ void raise_##name##(argsType const& args = {nullptr})
 This ```raise_##name##``` method will pass the ```args``` parameter to the event subscribers as the
 2nd parameter, with the 1st parameter being ```*this```. Therefore the macro only works for event
 handler delegates with two paramers, ```sender``` and ```args```.
-### ```DEFINE_PROPERTY*``` macros
+### ```DEFINE_PROPERTY*``` macros ###
 ```cpp
 #include <mvvm/property_macros.h>
 ```
-#### Declaration
+#### Declaration ####
 
 ```cpp
-DEFINE_PROPERTY(type, name, defaulValue)
-DEFINE_PROPERTY_PRIVATE_SET(type, name, defaulValue)
-DEFINE_PROPERTY_PROTECTED_SET(type, name, defaulValue)
-DEFINE_PROPERTY_READONLY(type, name, defaulValue)
+DEFINE_PROPERTY(type, name, defaultValue)
+DEFINE_PROPERTY_PRIVATE_SET(type, name, defaultValue)
+DEFINE_PROPERTY_PROTECTED_SET(type, name, defaultValue)
+DEFINE_PROPERTY_READONLY(type, name, defaultValue)
 ```
-#### Macro Parameters
+#### Macro Parameters ####
 ```type```
 : The type of the property.
 
 ```name```
-: The name of the property. It is recommended to ue the ```NAME_OF``` macro described below.
+: The name of the property. It is recommended to use the ```NAME_OF``` macro described below.
 
 ```defaultValue```
 : Use ```{}``` for the type's default value.
 
-#### Description
-This set of macros declares and implements a property's ```get``` and ```set``` accesors, as well
+#### Description ####
+This set of macros declares and implements a property's ```get``` and ```set``` accessors, as well
 as the backing data field. They are implemented with the assumption that the class is derived from,
 directly or indirectly, ```notify_property_changed``` class.
 
@@ -334,7 +334,7 @@ this method in its CPP file, or in the H file below the class:
 void On##name##Changed(type const& oldValue, type const& newValue);
 ```
 
-### Property macros that do not raise ```PropertyChanged``` events ###
+### Property macros that do NOT raise ```PropertyChanged``` events ###
 ```cpp
 #include <mvvm/property_macros.h>
 
