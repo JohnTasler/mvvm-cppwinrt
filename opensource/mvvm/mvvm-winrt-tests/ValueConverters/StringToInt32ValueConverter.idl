@@ -1,5 +1,4 @@
 #define WUXD Windows.UI.Xaml.Data
-#define WUXI Windows.UI.Xaml.Input
 
 namespace mvvm.tests
 {

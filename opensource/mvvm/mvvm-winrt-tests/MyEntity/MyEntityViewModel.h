@@ -25,9 +25,6 @@ namespace winrt::mvvm::tests::implementation
 
     private:
         int32_t m_myProperty{};
-
-        bool m_firstTimeCleared{};
-
         winrt::com_ptr<::mvvm::delegate_command<void>> m_incrementCommand{ nullptr };
         winrt::com_ptr<::mvvm::delegate_command<IInspectable>> m_decrementCommand{ nullptr };
         winrt::com_ptr<::mvvm::delegate_command<hstring>> m_stringCommand{ nullptr };

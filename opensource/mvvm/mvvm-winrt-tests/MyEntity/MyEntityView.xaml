@@ -68,12 +68,11 @@
             Margin="10" Width="90"
             Content="Int32"
             Command="{x:Bind ViewModel.Int32Command}"
-            CommandParameter="{x:Bind textBlock.Text,Mode=OneWay,Converter={StaticResource StringToInt32ValueConverter}}"
+            CommandParameter="{x:Bind TextBlock.Text,Mode=OneWay,Converter={StaticResource StringToInt32ValueConverter}}"
             />
+            <!-- Keeping these around for other references. -->
             <!--CommandParameter="{x:Bind ViewModel.MyProperty,Mode=OneWay}"-->
             <!--CommandParameter="{StaticResource Int43}"-->
-            <!--CommandParameter="{x:Bind RandomInteger,Mode=OneWay}"-->
             <!--CommandParameter="{x:Null}"-->
-            <!--CommandParameter="{x:Bind Converter={StaticResource StringToInt32ValueConverter},ConverterParameter=23}"-->
     </Grid>
 </UserControl>

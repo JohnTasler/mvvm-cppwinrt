@@ -8,11 +8,13 @@
 
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::UI::Core;
 using namespace winrt::Windows::UI::Xaml;
 using namespace winrt::Windows::UI::Xaml::Input;
 using namespace winrt::mvvm::tests::implementation;
 
 MyEntityViewModel::MyEntityViewModel()
+    : ::mvvm::view_model<MyEntityViewModel>(CoreWindow::GetForCurrentThread().Dispatcher())
 {
     m_incrementCommand = winrt::make_self<::mvvm::delegate_command<void>>(
         [this]() { MyProperty(MyProperty() + 1); },
