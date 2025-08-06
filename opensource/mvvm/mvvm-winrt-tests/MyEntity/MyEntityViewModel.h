@@ -18,10 +18,10 @@ namespace winrt::mvvm::tests::implementation
         DEFINE_PROPERTY_CALLBACK(bool, IsIncrementAvailable, true);
         DEFINE_PROPERTY_CALLBACK(bool, IsDecrementAvailable, true);
 
-        winrt::Windows::UI::Xaml::Input::ICommand IncrementCommand();
-        winrt::Windows::UI::Xaml::Input::ICommand DecrementCommand();
-        winrt::Windows::UI::Xaml::Input::ICommand StringCommand();
-        winrt::Windows::UI::Xaml::Input::ICommand Int32Command();
+        winrt::Windows::UI::Xaml::Input::ICommand IncrementCommand() { return *m_incrementCommand; }
+        winrt::Windows::UI::Xaml::Input::ICommand DecrementCommand() { return *m_decrementCommand; }
+        winrt::Windows::UI::Xaml::Input::ICommand StringCommand() { return *m_stringCommand; }
+        winrt::Windows::UI::Xaml::Input::ICommand Int32Command() { return *m_int32Command; }
 
     private:
         int32_t m_myProperty{};

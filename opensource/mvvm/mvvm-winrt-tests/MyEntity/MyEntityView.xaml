@@ -70,7 +70,7 @@
             Command="{x:Bind ViewModel.Int32Command}"
             CommandParameter="{x:Bind TextBlock.Text,Mode=OneWay,Converter={StaticResource StringToInt32ValueConverter}}"
             />
-            <!-- Keeping these around for other references. -->
+            <!-- Keeping these around for future reference. -->
             <!--CommandParameter="{x:Bind ViewModel.MyProperty,Mode=OneWay}"-->
             <!--CommandParameter="{StaticResource Int43}"-->
             <!--CommandParameter="{x:Null}"-->
