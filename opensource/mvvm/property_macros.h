@@ -1,6 +1,6 @@
 //*********************************************************
 //
-//    Copyright (c) Microsoft. All rights reserved.
+//    Copyright (c) John Tasler. All rights reserved.
 //    This code is licensed under the MIT License.
 //    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
 //    ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
@@ -29,6 +29,19 @@ using namespace std::literals;
         { \
             m_event##name.remove(token); \
         }
+#endif
+
+#ifndef DEFINE_EVENT_WITH_RAISE
+#define DEFINE_EVENT_WITH_RAISE(eventType, name, argsType) \
+    DEFINE_EVENT(eventType, name) \
+    void raise_##name(argsType const& args = {nullptr}) \
+    { \
+        if (m_event##name) \
+        { \
+            m_event##name(*this, args); \
+        } \
+    }
+
 #endif
 
 

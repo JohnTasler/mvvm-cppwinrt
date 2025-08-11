@@ -3,6 +3,8 @@
 #include "MyEntityViewModel.h"
 #include "MyEntityView.g.h"
 
+#include <mvvm/view.h>
+
 namespace winrt::mvvm::tests::implementation
 {
     struct MyEntityView
@@ -11,8 +13,6 @@ namespace winrt::mvvm::tests::implementation
     {
         MyEntityView();
         MyEntityView(MyEntityViewModel::class_type const& viewModel);
-
-        void ClickMeButton_Click(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::RoutedEventArgs const& args);
 
     private:
         using view_base = typename ::mvvm::view<MyEntityView, MyEntityViewModel::class_type>;

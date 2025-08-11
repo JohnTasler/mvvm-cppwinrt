@@ -20,11 +20,11 @@ template <typename Derived>
 struct __declspec(empty_bases) notify_property_changed
 ```
 
-#### Template Type Parameters
+#### Template Type Parameters ####
 ```Derived``` 
 : The most-derived class; the one that you're implementing.
 
-#### Description
+#### Description ####
 
 This file implements the ```notify_property_changed<Derived>``` class template, which implements a base
 implementation of ```INotifyPropertyChanged```. Although that interface only declares 1 member (the
@@ -101,7 +101,7 @@ void set_property_no_compare(Value& valueField, Value const& newValue, Value& ol
 ```
 
 - Extensible to allow derived classes to provide their own flavor of thread synchronization.
-: See the following ```view_model_base``` class for a discussion.
+See the following ```view_model_base``` class for a discussion.
 
 ### ```mvvm::view_model_base<Derived>``` ###
 ```cpp
@@ -153,10 +153,63 @@ the ```ViewModel``` property is sometimes a useful feature from XAML.
 #include <mvvm/delegate_command.h>
 ```
 
+#### Declaration ####
+```cpp
+template <typename Parameter>
+struct delegate_command;
+```
+
+#### Template Type Parameters ####
+```Parameter``` 
+: The type of data used by the command. If the command does not require data, this can be void.
+
+#### Description ####
 This class implements the command pattern, implementing ```ICommand``` by deferring to lambda expressions
-provided to the contructor. This pattern is used less often now since ```{x:Bind}``` is able to bind
+provided to the constructor. This pattern is used less often now since ```{x:Bind}``` can bind
 directly to a method. It may still be useful in cases where the ```CanExecute``` functionality is desired.
 It's also provided here for completeness of an MVVM base library.
+
+To create an instance, use the ```winrt::make_self``` function and store the returned object in a
+ ```winrt::com_ptr```. Like this:
+
+```cpp
+// in the .h file:
+    winrt::com_ptr<::mvvm::delegate_command<void>> m_incrementCommand{ nullptr };
+
+// in the .cpp file:
+    m_incrementCommand = winrt::make_self<::mvvm::delegate_command<void>>(
+        [this]() { MyProperty(MyProperty() + 1); },
+        [this]() { return IsIncrementAvailable(); } );
+
+// then return it (usually as a property getter) as an ```ICommand``` interface:
+ICommand MyEntityViewModel::IncrementCommand()
+{
+    return *m_incrementCommand;
+}
+```
+
+#### Public API ####
+
+```cpp
+// Constructors
+delegate_command() noexcept {}
+delegate_command(std::nullptr_t) noexcept {}
+
+template <typename ExecuteHandler>
+delegate_command(ExecuteHandler&& executeHandler);
+
+template <typename ExecuteHandler, typename CanExecuteHandler>
+delegate_command(ExecuteHandler executeHandler, CanExecuteHandler&& canExecuteHandler);
+
+// ICommand implementation
+event_token CanExecuteChanged(EventHandler<Windows::Foundation::IInspectable> const& handler);
+void CanExecuteChanged(event_token token);
+bool CanExecute(IInspectable const& parameter);
+void Execute(IInspectable const& parameter);
+
+// Raises the CanExecuteChanged event
+void raise_CanExecuteChanged();
+```
 
 ## Macros ##
 
@@ -169,16 +222,15 @@ It's also provided here for completeness of an MVVM base library.
 NAME_OF(typeName, propertyName)
 NAME_OF_NARROW(typeName, propertyName)
 ```
-#### Macro Parameters
+#### Macro Parameters ####
 
 ```typeName``` 
-: The name of the type that implements a member specified as ```propertyName```. This is not a
-string value - only the plain text name of the type.
+| The ```class``` or ```struct``` that implements the property. This is not a string value.
 
 ```propertyName``` 
-: The name of the class/struct that implements the property. This is not a string value.
+| The name of the property. This is not a string value - only the plain text name of the property.
 
-#### Description
+#### Description ####
 
 ```NAME_OF``` (and ```NAME_OF_NARROW``` for 8-bit characters) can be used to get the name of a property as a
 ```wstring_view``` or ```string_view``` ```constexpr```. This is commonly needed when checking which
@@ -192,36 +244,79 @@ leaving only the ```string_view``` to ```propertyName```. Because these return a
 ```string_view```, the result can be directly compared to a ```wchar_t*``` or ```char*```, respectively
 (whether ```const``` or not).
 
-### Event macros ###
+### ```DEFINE_EVENT``` and ```DEFINE_EVENT_WITH_RAISE``` ###
 
 ```cpp
 DEFINE_EVENT(type, name)
+DEFINE_EVENT_WITH_RAISE(eventType, name, argsType)
 ```
+#### Macro Parameters ####
 
 ```type```
-: The event handler type, such as ```RoutedEventHandler```.
+| The event handler type, such as ```RoutedEventHandler```.
 
 ```name```
-: The event name.
+| The event name.
 
-### Trivial/Common Property macros ###
+```argsType```
+| The event parameter type, such as ```RoutedEventArgs```.
+
+#### Description ####
+These macros each expand to code similar to the following, where ```##type##``` and ```##name##```
+are substitued with the specified macro parameters.
+```cpp
+private:
+    winrt::event<type> m_event##name;
+public:
+    winrt::event_token name##(type const& handler)
+    {
+        return m_event##name.add(handler);
+    }
+    void name##(winrt::event_token token)
+    {
+        m_event##name.remove(token);
+    }
+```
+When ```DEFINE_EVENT_WITH_RAISE``` is used, it does the above but also expands to a method with the
+following naming pattern, signature, and implementation:
+```cpp
+void raise_##name##(argsType const& args = {nullptr})
+{
+    if (m_event##name)
+    {
+        m_event##name(*this, args);
+    }
+}
+```
+This ```raise_##name##``` method will pass the ```args``` parameter to the event subscribers as the
+2nd parameter, with the 1st parameter being ```*this```. Therefore the macro only works for event
+handler delegates with two paramers, ```sender``` and ```args```.
+### ```DEFINE_PROPERTY*``` macros ###
 ```cpp
 #include <mvvm/property_macros.h>
-
-DEFINE_PROPERTY(type, name, defaulValue)
-DEFINE_PROPERTY_PRIVATE_SET(type, name, defaulValue)
-DEFINE_PROPERTY_PROTECTED_SET(type, name, defaulValue)
-DEFINE_PROPERTY_READONLY(type, name, defaulValue)
 ```
+#### Declaration ####
 
+```cpp
+DEFINE_PROPERTY(type, name, defaultValue)
+DEFINE_PROPERTY_PRIVATE_SET(type, name, defaultValue)
+DEFINE_PROPERTY_PROTECTED_SET(type, name, defaultValue)
+DEFINE_PROPERTY_READONLY(type, name, defaultValue)
+```
+#### Macro Parameters ####
 ```type```
 : The type of the property.
 
 ```name```
-: The name of the property. It is recommended to ue the ```NAME_OF``` macro described below.
+: The name of the property. It is recommended to use the ```NAME_OF``` macro described below.
 
 ```defaultValue```
 : Use ```{}``` for the type's default value.
+
+#### Description ####
+This set of macros declares and implements a property's ```get``` and ```set``` accessors, as well
+as the backing data field. They are implemented with the assumption that the class is derived from,
+directly or indirectly, ```notify_property_changed``` class.
 
 ### Property macros with callback when the value changes ###
 ```cpp
@@ -239,7 +334,7 @@ this method in its CPP file, or in the H file below the class:
 void On##name##Changed(type const& oldValue, type const& newValue);
 ```
 
-### Property macros that do not raise ```PropertyChanged``` events ###
+### Property macros that do NOT raise ```PropertyChanged``` events ###
 ```cpp
 #include <mvvm/property_macros.h>
 

@@ -1,9 +1,20 @@
+#define WUXD Windows.UI.Xaml.Data
+#define WUXI Windows.UI.Xaml.Input
+
 namespace mvvm.tests
 {
     [default_interface]
-    runtimeclass MyEntityViewModel
+    runtimeclass MyEntityViewModel : WUXD.INotifyPropertyChanged
     {
         MyEntityViewModel();
         Int32 MyProperty;
+
+        Boolean IsIncrementAvailable;
+        Boolean IsDecrementAvailable;
+
+        WUXI.ICommand IncrementCommand{ get; };
+        WUXI.ICommand DecrementCommand{ get; };
+        WUXI.ICommand StringCommand{ get; };
+        WUXI.ICommand Int32Command{ get; };
     }
 }

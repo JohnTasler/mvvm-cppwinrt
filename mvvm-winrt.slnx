@@ -1,0 +1,11 @@
+<Solution>
+  <Configurations>
+    <Platform Name="arm64" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="mvvm-winrt.vcxitems" Id="119310b5-558d-494e-807f-8a6c520b03a3" />
+  <Project Path="opensource/mvvm/mvvm-winrt-tests/mvvm-winrt-tests.vcxproj" Id="9da89475-0612-4621-aa64-8e6e2b116bdd">
+    <Platform Solution="*|arm64" Project="ARM64" />
+    <Deploy />
+  </Project>
+</Solution>

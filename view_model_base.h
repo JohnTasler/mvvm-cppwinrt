@@ -1,4 +1,4 @@
-// Copyright (C) Microsoft Corporation. All rights reserved.
+// Copyright (c) John Tasler. All rights reserved.
 #pragma once
 
-#include "opensourece/mvvm/view_model_base.h"
+#include "opensource/mvvm/view_model_base.h"

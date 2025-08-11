@@ -1,34 +1,96 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="Application">
+      <UniqueIdentifier>{9D18AD1D-FF86-44B1-84EA-26EC3DC05D35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{158841D0-E081-48F0-A4E2-F1FEF3F3E50E}</UniqueIdentifier>
+    </Filter>
     <Filter Include="MyEntity">
-      <UniqueIdentifier>{3241ec6b-b750-4ddd-8092-4a3237af915f}</UniqueIdentifier>
+      <UniqueIdentifier>{3241EC6B-B750-4DDD-8092-4A3237AF915F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ValueConverters">
+      <UniqueIdentifier>{B3D38B4A-A873-41C0-AF0C-60323A20D03C}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="App.cpp">
+      <Filter>Application</Filter>
+    </ClCompile>
     <ClCompile Include="module.cpp" />
     <ClCompile Include="MyEntity\MyEntityView.cpp" />
     <ClCompile Include="MyEntity\MyEntityViewModel.cpp" />
+    <ClCompile Include="ValueConverters\StringToInt32ValueConverter.cpp">
+      <Filter>ValueConverters</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="App.h">
+      <Filter>Application</Filter>
+    </ClInclude>
     <ClInclude Include="MyEntity\MyEntityViewModel.h">
       <Filter>MyEntity</Filter>
     </ClInclude>
+    <ClInclude Include="ValueConverters\StringToInt32ValueConverter.h">
+      <Filter>ValueConverters</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="module.def" />
     <None Include="packages.config" />
+    <None Include="mvvm-winrt-tests_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\SplashScreen.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square44x44Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square150x150Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\StoreLogo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Wide310x150Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\LockScreenLogo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="App.idl">
+      <Filter>Application</Filter>
+    </Midl>
     <Midl Include="MyEntity\MyEntityViewModel.idl">
       <Filter>MyEntity</Filter>
+    </Midl>
+    <Midl Include="ValueConverters\StringToInt32ValueConverter.idl">
+      <Filter>ValueConverters</Filter>
     </Midl>
   </ItemGroup>
   <ItemGroup>
     <Page Include="MyEntity\MyEntityView.xaml">
       <Filter>MyEntity</Filter>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
+    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natstepfilter" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Filter>Application</Filter>
+    </ApplicationDefinition>
   </ItemGroup>
 </Project>
