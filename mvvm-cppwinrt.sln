@@ -2,9 +2,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36327.8 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mvvm-winrt", "mvvm-winrt.vcxitems", "{119310B5-558D-494E-807F-8A6C520B03A3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mvvm-cppwinrt", "mvvm-cppwinrt.vcxitems", "{119310B5-558D-494E-807F-8A6C520B03A3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mvvm-winrt-tests", "opensource\mvvm\mvvm-winrt-tests\mvvm-winrt-tests.vcxproj", "{9DA89475-0612-4621-AA64-8E6E2B116BDD}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mvvm-cppwinrt-tests", "opensource\mvvm\tests\mvvm-cppwinrt-tests.vcxproj", "{9DA89475-0612-4621-AA64-8E6E2B116BDD}"
 EndProject
 Global
     GlobalSection(SolutionConfigurationPlatforms) = preSolution
