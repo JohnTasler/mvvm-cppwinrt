@@ -13,6 +13,6 @@ namespace mvvm.tests
         MyEntityView(MyEntityViewModel viewModel);
 
         MyEntityViewModel ViewModel;
-        WUXC.TextBlock TextBlock;
+        WUXC.TextBox TextBox;
     }
 }
